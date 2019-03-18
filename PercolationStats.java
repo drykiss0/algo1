@@ -7,8 +7,8 @@ public class PercolationStats {
     private static final double MEAN_CONSTANT = 1.96;
     private final int trials;
     private final double[] fractions;
-    private Double mean;
-    private Double stddev;
+    private double mean = -1;
+    private double stddev = -1;
 
     // perform trials independent experiments on an n-by-n grid
     public PercolationStats(int n, int trials) {
@@ -38,7 +38,7 @@ public class PercolationStats {
 
     // sample mean of percolation threshold
     public double mean() {
-        if (this.mean == null) {
+        if (this.mean == -1) {
             this.mean = StdStats.mean(fractions);
         }
         return this.mean;
@@ -46,7 +46,7 @@ public class PercolationStats {
 
     // sample standard deviation of percolation threshold
     public double stddev() {
-        if (this.stddev == null) {
+        if (this.stddev == -1) {
             this.stddev = StdStats.stddev(fractions);
         }
         return this.stddev;

@@ -48,7 +48,7 @@ public class Percolation {
     // is site (row, col) full?
     public boolean isFull(int row, int col) {
         validateArguments(n, row, col);
-        return (row == 1 && isOpen(row, col)) || uf.connected(vsIdx, idx(row, col));
+        return isOpen(row, col) && (row == 1 || uf.connected(vsIdx, idx(row, col)));
     }
 
     // number of open setSite
