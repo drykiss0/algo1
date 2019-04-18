@@ -16,7 +16,11 @@ public class Board {
     // construct a board from an n-by-n array of blocks
     // (where blocks[i][j] = block in row i, column j)
     public Board(int[][] blocks) {
-        this.blocks = blocks;
+        if (blocks == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.blocks = deepCopy(blocks);
         initializeDistances();
         initializeZeroPosition();
     }
@@ -75,7 +79,9 @@ public class Board {
 
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
-
+        if (blocks.length < 2) {
+            return new Board(blocks);
+        }
         int firstBlockCol = blocks[0][0] != 0 ? 0 : 1;
         int secondBlockCol = blocks[1][0] != 0 ? 0 : 1;
         return createSwapped(0, firstBlockCol, 1, secondBlockCol);
@@ -83,10 +89,7 @@ public class Board {
 
     private Board createSwapped(int rowFirst, int colFirst, int rowSecond, int colSecond) {
 
-        int[][] blocksCopy = blocks.clone();
-        for (int i = 0; i < blocksCopy.length; i++) {
-            blocksCopy[i] = blocksCopy[i].clone();
-        }
+        int[][] blocksCopy = deepCopy(blocks);
         int firstBlock = blocksCopy[rowFirst][colFirst];
         blocksCopy[rowFirst][colFirst] = blocksCopy[rowSecond][colSecond];
         blocksCopy[rowSecond][colSecond] = firstBlock;
@@ -94,16 +97,24 @@ public class Board {
         return new Board(blocksCopy);
     }
 
+    private int[][] deepCopy(int[][] source) {
+        int[][] blocksCopy = source.clone();
+        for (int i = 0; i < blocksCopy.length; i++) {
+            blocksCopy[i] = blocksCopy[i].clone();
+        }
+        return blocksCopy;
+    }
+
     // does this board equal y?
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object other) {
+        if (this == other) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        Board that = (Board) o;
+        Board that = (Board) other;
         return Arrays.deepEquals(blocks, that.blocks);
     }
 
@@ -114,7 +125,7 @@ public class Board {
             neighbors.add(createSwapped(zeroRow, zeroCol, zeroRow - 1, zeroCol));
         }
         if (zeroRow < dimension() - 1) {
-            neighbors.add(createSwapped(zeroRow, zeroCol,zeroRow + 1, zeroCol));
+            neighbors.add(createSwapped(zeroRow, zeroCol, zeroRow + 1, zeroCol));
         }
         if (zeroCol > 0) {
             neighbors.add(createSwapped(zeroRow, zeroCol, zeroRow, zeroCol - 1));
@@ -128,14 +139,14 @@ public class Board {
 
     // string representation of this board (in the output format specified below)
     public String toString() {
-        String s = String.valueOf(blocks.length);
+        StringBuilder s = new StringBuilder(String.valueOf(blocks.length));
         for (int i = 0; i < blocks.length; i++) {
-            s += "\n";
+            s.append("\n");
             for (int j = 0; j < blocks[i].length; j++) {
-                s += " " + blocks[i][j];
+                s.append(" ").append(blocks[i][j]);
             }
         }
-        return s;
+        return s.toString();
     }
 
     // unit tests (not graded)
@@ -164,5 +175,6 @@ public class Board {
         StdOut.println("\n---------- EQUALS --------");
         StdOut.println("Initial = Initial ? " + initial.equals(initial));
         StdOut.println("Initial = Twin ? " + initial.equals(twin));
+
     }
 }
